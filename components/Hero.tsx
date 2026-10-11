@@ -1,28 +1,76 @@
-import React from 'react';
 import Image from "next/image";
-import ProductCard from "@/components/ProductCard";
-import {money} from "@/lib/products";
-import {getProducts,getCategories} from "@/lib/api";
-import heroImg from "../app/assets/bazar-hero.png";
+import Link from "next/link";
+import ProductCard from "./ProductCard";
+import { getProducts } from "@/lib/api";
+import heroImg from "../public/assets/bazar-hero.png";
 
+export default async function HeroPage() {
+  const products = await getProducts();
+  const risers = [...products].filter((p) => p.change > 0);
+  const fallers = [...products].filter((p) => p.change < 0);
 
-const HeroPage = async () => {
-     const [products,categories]=await Promise.all([getProducts(),getCategories()]);
- const risers=[...products].filter(p=>p.change>0).sort((a,b)=>b.change-a.change).slice(0,6);
- const fallers=[...products].filter(p=>p.change<0).sort((a,b)=>a.change-b.change).slice(0,6);
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-6 font-sans">
+      {/* হিরো সেকশন */}
+      <section className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-emerald-900 to-emerald-700 text-white p-8 md:p-12 mb-10 shadow-lg flex flex-col md:flex-row items-center justify-between">
+        <div className="max-w-xl z-10">
+          <span className="bg-emerald-500/30 text-emerald-200 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+            সঠিক বাজার দর
+          </span>
+          <h1 className="text-4xl md:text-5xl font-bold mt-3 leading-tight">
+            নিত্যপ্রয়োজনীয় পণ্যের সঠিক ও আপডেট বাজার দর
+          </h1>
+          <p className="text-emerald-100 mt-4 text-base md:text-lg">
+            আজকের কাওরান বাজার, নিউ মার্কেট ও পাইকারি বাজারের সেরা দামের তুলনা এক পলকে দেখে নিন।
+          </p>
+          <div className="mt-6 flex gap-4">
+            <Link
+              href="/category/chal"
+              className="bg-white text-emerald-800 px-6 py-3 rounded-xl font-semibold hover:bg-emerald-50 transition shadow-sm"
+            >
+              বাজার দর দেখুন
+            </Link>
+          </div>
+        </div>
 
-    return (
-        <div className="container py-7">
-  <section className="surface p-6 sm:p-9 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
-   <div className="max-w-2xl"><span className="inline-block rounded-full bg-[#e4f4e9] text-[#16804a] px-3 py-1 text-xs font-bold mb-3">সর্বশেষ বাজারদর • {new Intl.DateTimeFormat("bn-BD",{day:"numeric",month:"long",year:"numeric"}).format(new Date())}</span><h1 className="hero-title text-3xl sm:text-4xl font-black leading-tight">আজকের বাজারের দাম এক নজরে</h1><p className="text-[#77847a] mt-4 leading-7">চাল, ডাল, তেল, সবজি, মাছ, মাংস, ডিম ও মসলার দাম। বাজারভিত্তিক বিস্তারিত, গড়, সর্বনিম্ন-সর্বোচ্চ এবং দামের পরিবর্তন এক জায়গায়।</p><a href="#সব-পণ্য" className="btn btn-primary mt-6">⚖️ বাজার দেখুন</a></div>
-   <div className="shrink-0 text-[115px] sm:text-[145px] drop-shadow-sm" aria-label="বাজারের ঝুড়ি"><Image src={heroImg} alt="বাজারের ঝুড়ি" width={300} height={300}></Image></div>
-  </section>
-  <section className="mt-9"><h2 className="section-title mb-4"><span className="text-red-600">▲</span> আজ দাম বেড়েছে</h2><div className="product-grid">{risers.map(p=><ProductCard key={p.id} product={p}/>)}</div></section>
-  <section className="mt-9"><h2 className="section-title mb-4"><span className="text-green-700">▼</span> আজ দাম কমেছে</h2><div className="product-grid">{fallers.map(p=><ProductCard key={p.id} product={p}/>)}</div></section>
+        <div className="mt-8 md:mt-0 relative w-full md:w-[420px] h-[260px] rounded-2xl overflow-hidden shadow-md">
+          <Image
+            src={heroImg}
+            alt="Bazar Hero"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+      </section>
 
-    <section id="সব-পণ্য" className="mt-10 scroll-mt-5"><h2 className="section-title">সব পণ্য</h2><p className="text-sm text-[#849087] mt-1 mb-4">মোট {products.length}টি পণ্য দেখানো হচ্ছে </p><div className="product-grid">{products.map(p=><ProductCard key={p.id} product={p}/>)}</div></section>
- </div>
-    );
-};
+      {/* দাম বাড়া পণ্য */}
+      <section className="mb-10">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-zinc-900 flex items-center gap-2">
+            📈 দাম বেড়েছে যে পণ্যগুলোর
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {risers.slice(0, 4).map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </section>
 
-export default HeroPage;
+      {/* দাম কমা পণ্য */}
+      <section className="mb-10">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-zinc-900 flex items-center gap-2">
+            📉 দাম কমেছে যে পণ্যগুলোর
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {fallers.slice(0, 4).map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
