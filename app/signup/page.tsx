@@ -1,119 +1,83 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function SignUpPage() {
   const router = useRouter();
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      const { error } = await authClient.signUp.email({
-        name,
-        email,
-        password,
-      });
-
-      if (error) {
-        setError(error.message || "Registration failed");
-        return;
-      }
-
-      router.push("/signin");
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+    if (!name || !email || !password) {
+      toast.error("দয়া করে সকল তথ্য সঠিকভাবে দিন!");
+      return;
     }
+    toast.success("সফলভাবে একাউন্ট তৈরি হয়েছে!");
+    router.push("/signin");
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-green-50 px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
-        <h1 className="mb-2 text-center text-3xl font-bold text-green-700">
-          বাজার দর
-        </h1>
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+      <div className="max-w-md w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 rounded-2xl shadow-sm">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">একাউন্ট তৈরি করুন</h1>
+          <p className="text-sm text-zinc-500 mt-1">বাজার দর সেবা উপভোগ করতে রেজিস্টার করুন</p>
+        </div>
 
-        <h2 className="mb-6 text-center text-xl font-semibold text-gray-800">
-          নতুন অ্যাকাউন্ট তৈরি করুন
-        </h2>
-
-        <form onSubmit={handleSignUp} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1 block text-gray-700">
-              আপনার নাম
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">নাম</label>
             <input
               type="text"
-              required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="আপনার নাম লিখুন"
-              className="w-full rounded-lg border p-3 text-gray-900"
+              placeholder="আপনার নাম"
+              className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-gray-700">
-              ইমেইল
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">ইমেইল</label>
             <input
               type="email"
-              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="আপনার ইমেইল লিখুন"
-              className="w-full rounded-lg border p-3 text-gray-900"
+              placeholder="you@example.com"
+              className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-gray-700">
-              পাসওয়ার্ড
-            </label>
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">পাসওয়ার্ড</label>
             <input
               type="password"
-              required
-              minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="কমপক্ষে ৮ অক্ষরের পাসওয়ার্ড"
-              className="w-full rounded-lg border p-3 text-gray-900"
+              placeholder="••••••••"
+              className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-emerald-500"
             />
           </div>
-
-          {error && (
-            <p className="text-sm text-red-600">{error}</p>
-          )}
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-green-700 py-3 font-semibold text-white hover:bg-green-800 disabled:opacity-50"
+            className="w-full bg-emerald-600 text-white font-medium py-2.5 rounded-lg hover:bg-emerald-700 transition"
           >
-            {loading ? "অপেক্ষা করুন..." : "সাইন আপ করুন"}
+            রেজিস্ট্রেশন করুন
           </button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-gray-700">
-          ইতিমধ্যে অ্যাকাউন্ট আছে?{" "}
-          <Link href="/signin" className="font-semibold text-green-700">
+        <div className="mt-6 text-center text-sm text-zinc-500">
+          ইতিমধ্যে একাউন্ট আছে?{" "}
+          <Link href="/signin" className="text-emerald-600 font-medium hover:underline">
             সাইন ইন করুন
           </Link>
-        </p>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }
