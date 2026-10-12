@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 
 const categories = [
   { name: "চাল", slug: "chal", icon: "🍚" },
@@ -312,7 +313,7 @@ const allProducts: Record<
   }
 };
 
-export default function ProductDetailPage() {
+function ProductDetailContent() {
   const params = useParams();
   const rawId = (params?.slug as string) || (params?.id as string) || "";
   const decodedId = decodeURIComponent(rawId);
@@ -418,5 +419,13 @@ export default function ProductDetailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductDetailPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0f1117] flex items-center justify-center text-sm text-zinc-400">লোড হচ্ছে...</div>}>
+      <ProductDetailContent />
+    </Suspense>
   );
 }

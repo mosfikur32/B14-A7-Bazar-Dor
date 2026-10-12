@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 
 const categories = [
   { name: "চাল", slug: "chal", icon: "🍚" },
@@ -58,7 +58,7 @@ const categoryProducts: Record<
   ],
 };
 
-export default function CategoryPage() {
+function CategoryContent() {
   const params = useParams();
   const currentSlug = (params?.slug as string) || "chal";
   const [sortOrder, setSortOrder] = useState("default");
@@ -162,5 +162,13 @@ export default function CategoryPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CategoryPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0f1117] text-white p-8">লোড হচ্ছে...</div>}>
+      <CategoryContent />
+    </Suspense>
   );
 }
